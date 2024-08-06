@@ -1,0 +1,54 @@
+{% extends 'dashboard.html' %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8 mt-5">
+        <h2>Orders History</h2>
+        <table id="myTable" class="table mt-5">
+            <thead class="thead-dark">
+            <tr>
+                <th scope="col">Sr.No.</th>
+                <th scope="col">Symbol</th>
+                <th scope="col">Side</th>
+                <th scope="col">Price</th>
+                <th scope="col">Qty</th>
+                <th scope="col">Created at</th>
+            </tr>
+            </thead>
+
+            <tbody>
+            {% for orders in trading_history %}
+            <tr>
+                <td>{{ forloop.counter }}</td>
+                <td>{{ orders.order_symbol }}</td>
+                <td>{{ orders.order_side }}</td>
+                <td>{{ orders.order_price }}</td>
+                <td>{{ orders.order_qty }}</td>
+                <td>{{ orders.created_at }}</td>
+            </tr>
+            {% endfor %}
+            </tbody>
+
+        </table>
+    </div>
+</div>
+
+<script>
+    setInterval(api_call, 10000)
+    function api_call () {
+        $.ajax({
+            url: "http://127.0.0.1:8000/history_api/",
+            dataType: "JSON",
+            success: function (data) {
+                $("#myTable tbody").empty();
+                for (var i = 0; i < data.length; i++) {
+                    var row = $('<tr>'+ '<td>' + (i+1) +'</td>' + '<td>' + data[i].order_symbol + '</td>' + '<td>' + data[i].order_side + '</td>' + '<td>' + data[i].order_price + '</td>' + '<td>' + data[i].order_qty + '</td>' + '<td>' + data[i].created_at + '</td></tr>');
+                    console.log(row);
+                    $("#myTable tbody").append(row);
+                }
+            }
+        });
+    }
+</script>
+
+{% endblock %}
